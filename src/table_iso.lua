@@ -17,11 +17,61 @@ local function add_table_values(table_values, t)
    end
 end
 
+local function reverse_postorder(table_values)
+   local graph = {}
+
+   for _, t in ipairs(table_values) do
+      for k, v in pairs(t) do
+         if type(k) == "table" then
+            graph[k] = graph[k] or {}
+            graph[k][t] = true
+         end
+
+         if type(v) == "table" then
+            graph[v] = graph[v] or {}
+            graph[v][t] = true
+         end
+      end
+   end
+
+   local postorder = {}
+   local visited = {}
+
+   local function visit(t)
+      if visited[t] then
+         return
+      end
+
+      visited[t] = true
+
+      for including_table in pairs(graph[t] or {}) do
+         visit(including_table)
+      end
+
+      table.insert(postorder, t)
+   end
+
+   for _, t in ipairs(table_values) do
+      visit(t)
+   end
+
+   local new_table_values = {}
+
+   for index = #postorder, 1, -1 do
+      local id = #postorder - index + 1
+      local value = postorder[index]
+      new_table_values[id] = value
+      new_table_values[value] = id
+   end
+
+   return new_table_values
+end
+
 -- Returns a table mapping all unique tables within `t` to consecutive positive integer ids and back.
 local function get_table_values(t)
    local table_values = {}
    add_table_values(table_values, t)
-   return table_values
+   return reverse_postorder(table_values)
 end
 
 local function intersect(set1, set2)
@@ -199,7 +249,6 @@ function table_iso.check_iso(root1, root2, opts)
    end
 
    local ordered_candidates1 = {}
-
    local not_candidate_values2 = {}
 
    for _, value2 in ipairs(table_values2) do
