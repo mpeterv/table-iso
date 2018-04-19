@@ -20,7 +20,7 @@ luassert.not_same(t9, t10) -- Structurally same table keys are considered distin
 assert(table_iso.check_iso(t9, t10))
 ```
 
-Two tables `root1 and `root2` are considered structurally equivalent (isomorphic) iff there is a bijection `F`
+Two tables `root1` and `root2` are considered structurally equivalent (isomorphic) iff there is a bijection `F`
 between sets of tables found within the two tables with the following property:
 let `F'` be `F` for tables and identity for other values; for each table `t` found within the first table for
 each key-value pair `[k] = v` in `t` `F(t)` must have key-value pair `[F'(k)] = F'(v)` and have no other
